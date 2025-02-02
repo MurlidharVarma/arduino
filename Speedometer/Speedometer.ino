@@ -1,26 +1,48 @@
 #include "ArduinoGraphics.h"
 #include "Arduino_LED_Matrix.h"
+#include <WifiConnect.h>
+#include <WebSock.h>
+#include "secret.h"
+
+WifiConnect myWifi(SECRET_SSID, SECRET_PWD);
+WebSock sock(FEEDER_IPV4_ADDRESS,3000);
 
 const int IR_SENSOR_START_PIN = 2;
 const int IR_SENSOR_END_PIN = 4;
-const long DISTANCE_BETWEEN_SENSOR = 15;
+const int BUZZER_PIN=8;
+const long DISTANCE_BETWEEN_SENSOR = 30;
 
 long timeTookByCarToCross = 0;
 long startTime =0;
 long endTime=0;
 long speed = 0.0;
+int lastRecordedSpeed = 0;
 
 ArduinoLEDMatrix matrix;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+
+  //initiate UNO R4 LED matrix
   matrix.begin();
 
+  //intiate connection to home wifi
+  myWifi.init();
+
+  //initate websocket connection to the feeder server
+  sock.connect();
+
+  // define pin modes for IR sensors and Indicator Buzzer/LED
   pinMode(IR_SENSOR_START_PIN, INPUT);
   pinMode(IR_SENSOR_END_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
 
+  //initialize Speedometer
   initializeSpeedoMeter();
+
+  // indicate initialization is done
+  initiationCompleteIndication();
 }
 
 void loop() {
@@ -34,6 +56,7 @@ void loop() {
   if (didCarCrossStartSensor == 0){
     // initialize all variables to zero for next reading
     initializeSpeedoMeter();
+    buzzOn();
     startTime = millis();
   }
 
@@ -46,7 +69,13 @@ void loop() {
 
     // calculate speed by distance / time
     calculateAndDisplaySpeed(timeTookByCarToCross);
-
+    
+    // send the speed to the server
+    sendSpeedValueToFeederServer(speed);
+    
+    // turn of the reading indicator
+    buzzOff();
+    
     // log stats to serial port
     displayStats();
 
@@ -65,7 +94,7 @@ void initializeSpeedoMeter(){
 
 // calculate the speed in cm/s
 void calculateAndDisplaySpeed(long t){
-  speed = (long)((DISTANCE_BETWEEN_SENSOR * 1000) / (t)) ;
+  speed = (int)((DISTANCE_BETWEEN_SENSOR * 1000) / (t)) ;
   display(speed);
 }
 
@@ -102,4 +131,33 @@ void display(char text[]){
   matrix.endText();
 
   matrix.endDraw();
+}
+
+// Turn ON indicator - LED/Buzzer
+void buzzOn(){
+  digitalWrite(BUZZER_PIN, HIGH);
+}
+
+// Turn ON indicator - LED/Buzzer
+void buzzOff(){
+  digitalWrite(BUZZER_PIN,LOW);
+}
+
+// send the speed value to the server
+void sendSpeedValueToFeederServer(int val){
+  if(lastRecordedSpeed != val){
+    sock.send(val);
+    lastRecordedSpeed = val;
+  }
+}
+
+void initiationCompleteIndication(){
+  int icounter = 0;
+  while (icounter <=3){
+    buzzOn();
+    delay(500);
+    buzzOff();
+    delay(500);
+    icounter++;
+  }
 }

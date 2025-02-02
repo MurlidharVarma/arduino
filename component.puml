@@ -1,0 +1,21 @@
+@startuml
+!pragma teoz true
+
+box  #LightBlue
+participant "Hotwheels Car" as Hotwheels
+box  #LightGreen
+boundary "Arduino UNO R4" as Arduino
+end box
+queue "Feeder" as Feeder
+database "Pantry Cloud" as Pantry
+control "UI Server" as UIServer
+participant "Smart TV" as TV
+end box
+
+Hotwheels -[#red]>(20) Arduino : via Sensor
+Arduino -[#red]>(20) Feeder : websocket 
+Feeder -[#red]>(20) Pantry : store speed as json
+UIServer -[#green]>(20) Pantry: poll for speed entry
+UIServer -[#green]>(40) TV : Push speed to browser on TV
+
+@enduml

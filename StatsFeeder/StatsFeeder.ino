@@ -1,9 +1,9 @@
 #include "secret.h"
-#include "WifiConnect.h"
-#include "WebSock.h"
+#include <WifiConnect.h>
+#include <WebSock.h>
 
 WifiConnect myWifi(SECRET_SSID, SECRET_PWD);
-WebSock sock("192.168.1.4",3000);
+WebSock sock(FEEDER_IPV4_ADDRESS,3000);
 
 int lastData = 0;
 

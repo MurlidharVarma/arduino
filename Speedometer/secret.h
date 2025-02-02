@@ -1,3 +1,3 @@
 #define SECRET_SSID ""
 #define SECRET_PWD ""
-#define FEEDER_IPV4_ADDRESS ""
+#define FEEDER_IPV4_ADDRESS "192.168.1.8"
