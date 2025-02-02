@@ -2,6 +2,8 @@
 
 Arduino code to measure speed using IR sensors and feed the speed to [Feeder](https://github.com/MurlidharVarma/feeder) via websocket connection.
 
+Demo video [here](https://youtu.be/JssuMK-co_c)
+
 ![image](./out/component/component.svg)
 
 ## Components Repositories
