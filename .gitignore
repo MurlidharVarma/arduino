@@ -1,2 +1,6 @@
 .DS_Store
 **/.DS_Store
+libraries/Adafruit_BusIO
+libraries/Adafruit_GFX_Library
+libraries/Adafruit_SSD1306
+libraries/ArduinoGraphics
