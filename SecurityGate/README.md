@@ -1,6 +1,8 @@
 # Automated Security Gate
 
-Simple Security Gate that uses Arduino, Servo Motor and IR sensor/
+Simple Security Gate that uses Arduino, Servo Motor and IR sensor.
+
+For demo click [here](https://youtu.be/zxoEcoi7S64)
 
 | Element | Description |
 |---------  | ----------- |
